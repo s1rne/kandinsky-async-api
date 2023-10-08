@@ -57,7 +57,6 @@ class FusionBrainApi:
                     result = await response.json()
                     if result["status"] == "DONE":
                         break
-                    print(result)
 
             await asyncio.sleep(1)
         img_bytes = base64.b64decode(result["images"][0])
