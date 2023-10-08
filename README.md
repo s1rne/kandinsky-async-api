@@ -7,15 +7,24 @@ api для использования нейросети kandinsky 2.2
 ### 1. text2image
 
 ```
-async def main():
-    test = FusionBrainApi()
-    img_bytes = await test.text2image("Котик", style="CYBERPUNK")
+model = FusionBrainApi()
+
+
+async def generate():
+    img_bytes = await model.text2image("дизайн", style="CYBERPUNK")
     img = Image.open(img_bytes)
     img.save('cat_cyberpunk.jpg')
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    asyncio.run(generate())
 ```
 
-Все стили можно посмотреть в `FusionBrainApi().styles`
+Все стили можно посмотреть в `FusionBrainApi().styles`:
+
+```
+async def read_styles():
+    for style in model.styles:
+        print(style)
+        print("\n")
+```

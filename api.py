@@ -11,7 +11,7 @@ class FusionBrainApi:
     url_text2image_run = "https://api.fusionbrain.ai/web/api/v1/text2image/run"
     url_text2_image_status = "https://api.fusionbrain.ai/web/api/v1/text2image/status/$uuid"
 
-    styles = [""]
+    styles = []
 
     def __init__(self):
         asyncio.run(self.load_styles())

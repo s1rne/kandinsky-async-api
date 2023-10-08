@@ -4,13 +4,21 @@ from PIL import Image
 
 from api import FusionBrainApi
 
+model = FusionBrainApi()
 
-async def main():
-    test = FusionBrainApi()
-    img_bytes = await test.text2image("Котик", style="CYBERPUNK")
+
+async def generate():
+    img_bytes = await model.text2image("дизайн", style="CYBERPUNK")
     img = Image.open(img_bytes)
     img.save('cat_cyberpunk.jpg')
 
 
+async def read_styles():
+    for style in model.styles:
+        print(style)
+        print("\n")
+
+
 if __name__ == '__main__':
-    asyncio.run(main())
+    asyncio.run(generate())
+    asyncio.run(read_styles())
