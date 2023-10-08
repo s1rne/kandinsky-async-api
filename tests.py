@@ -8,7 +8,7 @@ model = FusionBrainApi()
 
 
 async def generate():
-    img_bytes = await model.text2image("дизайн", style="CYBERPUNK")
+    img_bytes = await model.text2image("котик", style="CYBERPUNK")
     img = Image.open(img_bytes)
     img.save('cat_cyberpunk.jpg')
 
