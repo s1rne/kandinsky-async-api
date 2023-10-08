@@ -1,12 +1,10 @@
-# kandinsky-api-requests
+import asyncio
 
-api для использования нейросети kandinsky 2.2
+from PIL import Image
 
-**Как использовать:**
+from api import FusionBrainApi
 
-### 1. text2image
 
-```
 async def main():
     test = FusionBrainApi()
     img_bytes = await test.text2image("Котик", style="CYBERPUNK")
@@ -16,6 +14,3 @@ async def main():
 
 if __name__ == '__main__':
     asyncio.run(main())
-```
-
-Все стили можно посмотреть в `FusionBrainApi().styles`
