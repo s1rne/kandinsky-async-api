@@ -20,5 +20,5 @@ async def read_styles():
 
 
 if __name__ == '__main__':
-    asyncio.run(generate())
     asyncio.run(read_styles())
+    asyncio.run(generate())
