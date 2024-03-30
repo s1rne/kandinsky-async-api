@@ -35,3 +35,6 @@ async def read_styles():
     for style in await model.get_styles():
         print(style, end="\n\n")
 ```
+
+
+![Пример генерации]([https://github.com/jon/coolproject/raw/master/image/image.png](https://github.com/s1rne/kandinsky-async-api/blob/main/cat_anime.jpg))
