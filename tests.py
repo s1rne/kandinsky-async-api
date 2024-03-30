@@ -8,9 +8,14 @@ model = FusionBrainApi("Сюда свой api_key", "Сюда свой secret_ke
 
 
 async def generate():
-    img_bytes = await model.text2image("котик", style="ANIME")
-    img = Image.open(img_bytes)
-    img.save('cat_anime.jpg')
+    result = await model.text2image("котик", style="ANIME")
+    if result["error"]:
+        print("Error:")
+        print(result["data"])
+    else:
+        img = Image.open(result["data"])
+        img.save('cat_anime.jpg')
+        print("Done!")
 
 
 async def read_styles():

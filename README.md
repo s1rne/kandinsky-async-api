@@ -5,6 +5,7 @@
 ВНИМАНИЕ: После изменнеия структуры сайта, сделана работа только для api версии. Планируется "взломать" использование web версии программно.
 
 **Как использовать:**
+###### *полный пример можно посмотреть в tests.py*
 
 ### 1. text2image
 
@@ -13,9 +14,14 @@ model = FusionBrainApi()
 
 
 async def generate():
-    img_bytes = await model.text2image("котик", style="ANIME")
-    img = Image.open(img_bytes)
-    img.save('cat_anime.jpg')
+    result = await model.text2image("котик", style="ANIME")
+    if result["error"]:
+        print("Error:")
+        print(result["data"])
+    else:
+        img = Image.open(result["data"])
+        img.save('cat_anime.jpg')
+        print("Done!")
 
 
 if __name__ == '__main__':

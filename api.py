@@ -1,6 +1,7 @@
 import asyncio
 import base64
 import json
+import time
 from io import BytesIO
 
 import aiohttp
@@ -28,8 +29,10 @@ class FusionBrainApi:
                          negative_prompt: str = "",
                          style: str = "DEFAULT",
                          width: int = 1024,
-                         height: int = 1024
-                         ) -> BytesIO:
+                         height: int = 1024,
+
+                         max_time: int = 120  # max time generation on seconds (after return error)
+                         ) -> dict:
 
         params = {
             "type": "GENERATE",
@@ -51,18 +54,18 @@ class FusionBrainApi:
                 result = await resp.json()
 
         if "error" in result:
-            return result
+            return {"error": True, "data": result}
 
         uuid = result["uuid"]
-        for attempt in range(20):
+        start_time = time.time()
+        while time.time() - (start_time + max_time) < 0:
             async with aiohttp.ClientSession() as session:
                 _url = self.url_text2_image_status.replace("$uuid", uuid)
                 async with session.get(_url, headers=self.api_headers, ssl=False) as resp:
-                    print(await resp.text())
                     result = await resp.json()
                     if result["status"] == "DONE":
-                        break
+                        return {"error": False, "data": BytesIO(base64.b64decode(result["images"][0]))}
 
-            await asyncio.sleep(1)
-        img_bytes = base64.b64decode(result["images"][0])
-        return BytesIO(img_bytes)
+            await asyncio.sleep(4)
+
+        return {"error": True, "data": f"timeout: {max_time} seconds"}
