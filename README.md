@@ -37,4 +37,4 @@ async def read_styles():
 ```
 
 
-![Пример генерации]([https://github.com/jon/coolproject/raw/master/image/image.png](https://github.com/s1rne/kandinsky-async-api/blob/main/cat_anime.jpg))
+![Пример генерации](https://github.com/s1rne/kandinsky-async-api/blob/main/cat_anime.jpg)
