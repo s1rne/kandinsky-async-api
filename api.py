@@ -21,7 +21,7 @@ class FusionBrainApi:
 
     async def get_styles(self):
         async with aiohttp.ClientSession() as session:
-            async with session.get(self.url_get_styles, ssl=False) as response:
+            async with session.get(self.url_get_styles) as response:
                 return await response.json()
 
     async def text2image(self,
@@ -50,7 +50,7 @@ class FusionBrainApi:
         data.add_field("model_id", "4")
 
         async with aiohttp.ClientSession() as session:
-            async with session.post(self.url_text2image_run, data=data, headers=self.api_headers, ssl=False) as resp:
+            async with session.post(self.url_text2image_run, data=data, headers=self.api_headers) as resp:
                 result = await resp.json()
 
         if "error" in result:
@@ -61,7 +61,7 @@ class FusionBrainApi:
         while time.time() - (start_time + max_time) < 0:
             async with aiohttp.ClientSession() as session:
                 _url = self.url_text2_image_status.replace("$uuid", uuid)
-                async with session.get(_url, headers=self.api_headers, ssl=False) as resp:
+                async with session.get(_url, headers=self.api_headers) as resp:
                     result = await resp.json()
                     if result["status"] == "DONE":
                         return {"error": False, "data": BytesIO(base64.b64decode(result["images"][0]))}
