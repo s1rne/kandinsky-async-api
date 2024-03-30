@@ -1,6 +1,6 @@
 # kandinsky-api-requests
 
-**Асионхронное** api для использования нейросети kandinsky 2.2
+**Асионхронное** api для использования нейросети kandinsky 3.0
 
 ВНИМАНИЕ: После изменнеия структуры сайта, сделана работа только для api версии. Планируется "взломать" использование web версии программно.
 
@@ -35,3 +35,6 @@ async def read_styles():
     for style in await model.get_styles():
         print(style, end="\n\n")
 ```
+
+
+![Пример генерации](https://github.com/s1rne/kandinsky-async-api/blob/main/cat_anime.jpg)
