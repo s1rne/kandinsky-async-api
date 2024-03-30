@@ -1,8 +1,8 @@
 # kandinsky-api-requests
 
-api для использования нейросети kandinsky 2.2
+Асионхронное api для использования нейросети kandinsky 2.2
 
-ВНИМАНИЕ: Проект работал со старой версией kandinsky. Проект заброшен (возможно временно) и не работает с новой версией kandinsky
+ВНИМАНИЕ: После изменнеия структуры сайта, сделана работа только для api версии. Планируется "взломать" использование web версии программно.
 
 **Как использовать:**
 
@@ -13,20 +13,19 @@ model = FusionBrainApi()
 
 
 async def generate():
-    img_bytes = await model.text2image("котик", style="CYBERPUNK")
+    img_bytes = await model.text2image("котик", style="ANIME")
     img = Image.open(img_bytes)
-    img.save('cat_cyberpunk.jpg')
+    img.save('cat_anime.jpg')
 
 
 if __name__ == '__main__':
     asyncio.run(generate())
 ```
 
-Все стили можно посмотреть в `FusionBrainApi().styles`:
+Все стили можно посмотреть в `await FusionBrainApi().get_styles()`:
 
 ```
 async def read_styles():
-    for style in model.styles:
-        print(style)
-        print("\n")
+    for style in await model.get_styles():
+        print(style, end="\n\n")
 ```
