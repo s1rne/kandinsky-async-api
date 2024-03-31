@@ -63,8 +63,12 @@ class FusionBrainApi:
                 _url = self.url_text2_image_status.replace("$uuid", uuid)
                 async with session.get(_url, headers=self.api_headers) as resp:
                     result = await resp.json()
+                    print(result)
                     if result["status"] == "DONE":
-                        return {"error": False, "data": BytesIO(base64.b64decode(result["images"][0]))}
+                        if result["censored"]:
+                            return {"error": True, "data": "censored: is True"}
+                        else:
+                            return {"error": False, "data": BytesIO(base64.b64decode(result["images"][0]))}
 
             await asyncio.sleep(4)
 
