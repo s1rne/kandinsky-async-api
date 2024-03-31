@@ -69,6 +69,8 @@ class FusionBrainApi:
                             return {"error": True, "data": "censored: is True"}
                         else:
                             return {"error": False, "data": BytesIO(base64.b64decode(result["images"][0]))}
+                    elif result["status"] == "FAIL":
+                        return {"error": True, "data": f"status is FAIL: {result['status']}"}
 
             await asyncio.sleep(4)
 
