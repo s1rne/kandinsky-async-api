@@ -26,5 +26,5 @@ setup(
     project_urls={
         'GitHub': 'https://github.com/s1rne/kandinsky-async-api'
     },
-    python_requires='>=3.11'
+    python_requires='>=3.6'
 )
