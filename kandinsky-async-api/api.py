@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import base64
 import json
@@ -6,22 +8,46 @@ from io import BytesIO
 
 import aiohttp
 
+from API_types import ApiApi, ApiWeb
+from URLS import ApiUrls, WebUrls
+
 
 class FusionBrainApi:
-    url_get_styles = "https://cdn.fusionbrain.ai/static/styles/api"
+    url_get_styles = "https://cdn.fusionbrain.ai/static/styles/$api_type"
 
-    url_text2image_run = "https://api-key.fusionbrain.ai/key/api/v1/text2image/run"
-    url_text2_image_status = "https://api-key.fusionbrain.ai/key/api/v1/text2image/status/$uuid"
-
-    def __init__(self, api_key: str, secret_key: str):
-        self.api_headers = {
-            "X-Key": f"Key {api_key}",
-            "X-Secret": f"Secret {secret_key}",
+    models_api_type = {
+        "api": {
+            "3.0": "4"
+        },
+        "web": {
+            "3.0": "1"
         }
+    }
 
-    async def get_styles(self):
+    def __init__(self, api: ApiApi | ApiWeb):
+        if hasattr(api, "type"):
+            if api.type == "api":
+                self.api_headers = {
+                    "X-Key": f"Key {api.api_key}",
+                    "X-Secret": f"Secret {api.secret_key}",
+                }
+                self.api_type = api.type
+                self.urls = ApiUrls
+            elif api.type == "web":
+                self.api_headers = {
+                    "Authorization": api.authorization
+                }
+                self.api_type = api.type
+                self.urls = WebUrls
+            else:
+                raise TypeError("Invalid API")
+        else:
+            raise TypeError("Invalid API type")
+
+    async def get_styles(self) -> ApiApi:
         async with aiohttp.ClientSession() as session:
-            async with session.get(self.url_get_styles) as response:
+            n_url = self.url_get_styles.replace("$api_type", self.api_type)
+            async with session.get(n_url) as response:
                 return await response.json()
 
     async def text2image(self,
@@ -30,6 +56,7 @@ class FusionBrainApi:
                          style: str = "DEFAULT",
                          width: int = 1024,
                          height: int = 1024,
+                         model: str = "3.0",  # don`t touch (only 3.0)
 
                          max_time: int = 120  # max time generation on seconds (after return error)
                          ) -> dict:
@@ -46,11 +73,13 @@ class FusionBrainApi:
         data = aiohttp.FormData()
         data.add_field("params",
                        json.dumps(params),
-                       content_type="application/json")
-        data.add_field("model_id", "4")
+                       content_type="application/json",
+                       )
+        data.add_field("model_id", self.models_api_type[self.api_type][model])
 
         async with aiohttp.ClientSession() as session:
-            async with session.post(self.url_text2image_run, data=data, headers=self.api_headers) as resp:
+            n_url = self.urls.url_text2image_run
+            async with session.post(n_url, data=data, headers=self.api_headers) as resp:
                 result = await resp.json()
 
         if "error" in result:
@@ -60,8 +89,8 @@ class FusionBrainApi:
         start_time = time.time()
         while time.time() - (start_time + max_time) < 0:
             async with aiohttp.ClientSession() as session:
-                _url = self.url_text2_image_status.replace("$uuid", uuid)
-                async with session.get(_url, headers=self.api_headers) as resp:
+                n_url = self.urls.url_text2_image_status.replace("$uuid", uuid)
+                async with session.get(n_url, headers=self.api_headers) as resp:
                     result = await resp.json()
                     print(result)
                     if result["status"] == "DONE":
