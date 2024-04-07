@@ -8,45 +8,24 @@ from io import BytesIO
 
 import aiohttp
 
-from API_types import ApiApi, ApiWeb
-from URLS import ApiUrls, WebUrls
+from .API_types import ApiApi, ApiWeb
 
 
 class FusionBrainApi:
     url_get_styles = "https://cdn.fusionbrain.ai/static/styles/$api_type"
 
-    models_api_type = {
-        "api": {
-            "3.0": "4"
-        },
-        "web": {
-            "3.0": "1"
-        }
-    }
-
     def __init__(self, api: ApiApi | ApiWeb):
         if hasattr(api, "type"):
-            if api.type == "api":
-                self.api_headers = {
-                    "X-Key": f"Key {api.api_key}",
-                    "X-Secret": f"Secret {api.secret_key}",
-                }
-                self.api_type = api.type
-                self.urls = ApiUrls
-            elif api.type == "web":
-                self.api_headers = {
-                    "Authorization": api.authorization
-                }
-                self.api_type = api.type
-                self.urls = WebUrls
+            if api.type not in [ApiApi.type, ApiWeb.type]:
+                raise TypeError("Invalid API type")
             else:
-                raise TypeError("Invalid API")
+                self.api = api
         else:
-            raise TypeError("Invalid API type")
+            raise TypeError("Invalid API structure")
 
     async def get_styles(self) -> dict:
         async with aiohttp.ClientSession() as session:
-            n_url = self.url_get_styles.replace("$api_type", self.api_type)
+            n_url = self.url_get_styles.replace("$api_type", self.api.type)
             async with session.get(n_url) as response:
                 return await response.json()
 
@@ -75,11 +54,11 @@ class FusionBrainApi:
                        json.dumps(params),
                        content_type="application/json",
                        )
-        data.add_field("model_id", self.models_api_type[self.api_type][model])
+        data.add_field("model_id", self.api.model_numbers[model])
 
         async with aiohttp.ClientSession() as session:
-            n_url = self.urls.url_text2image_run
-            async with session.post(n_url, data=data, headers=self.api_headers) as resp:
+            n_url = self.api.urls.url_text2image_run
+            async with session.post(n_url, data=data, headers=await self.api.get_headers()) as resp:
                 result = await resp.json()
 
         if "error" in result:
@@ -89,10 +68,9 @@ class FusionBrainApi:
         start_time = time.time()
         while time.time() - (start_time + max_time) < 0:
             async with aiohttp.ClientSession() as session:
-                n_url = self.urls.url_text2_image_status.replace("$uuid", uuid)
-                async with session.get(n_url, headers=self.api_headers) as resp:
+                n_url = self.api.urls.url_text2_image_status.replace("$uuid", uuid)
+                async with session.get(n_url, headers=await self.api.get_headers()) as resp:
                     result = await resp.json()
-                    print(result)
                     if result["status"] == "DONE":
                         if result["censored"]:
                             return {"error": True, "data": "censored: is True"}

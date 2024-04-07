@@ -8,10 +8,14 @@
 ##### Установка: `pip install AsyncKandinsky`
 
 ### Для инициализации FusionBrainApi можно использовать keys или данные аккаунта:
- + api_key и secret_key - их надо создать во вкладе api (https://fusionbrain.ai/keys/):
+ + api_key и secret_key:
+   + **!!! Ключи создаются в вкладке api (https://fusionbrain.ai/keys/)**
    + быстрый и простой способ генерации 
- + почта и пароль - данные от уже созданного аккаунта {пока в разработке}:
-   + в такой версии будет доступна генерация: **видео / анимации / больше стилей**
+   + не самое лучше качество генерации
+ + почта и пароль - данные от уже созданного аккаунта:
+   + **!!! Обязательно нужен уже зарегистрированный аккаунт**
+   + в такой версии будет доступна генерация: **видео / анимации / больше стилей** {В процесса разработки}
+   + лучшее качество генерации
 ###### *Полный пример можно посмотреть в tests.py (GitHub)*
 
 
@@ -19,6 +23,8 @@
 
 ```
 model = FusionBrainApi(ApiApi(api_key, secret_key))
+# Любой способ на выбор
+model = FusionBrainApi(ApiWeb("Ваша почта", "Ваш пароль"))
 
 
 async def generate():
@@ -41,7 +47,7 @@ if __name__ == '__main__':
 ```
 async def read_styles():
     for style in await model.get_styles():
-        print(style, end="\n\n")
+        print(style)
 ```
 
 ![Пример генерации](https://github.com/s1rne/kandinsky-async-api/blob/main/cat_anime.jpg)
