@@ -65,6 +65,9 @@ class FusionBrainApi:
             return {"error": True, "data": result}
 
         uuid = result["uuid"]
+        return await self.polling(uuid, max_time)
+
+    async def polling(self, uuid: str, max_time: int) -> dict:
         start_time = time.time()
         while time.time() - (start_time + max_time) < 0:
             async with aiohttp.ClientSession() as session:
