@@ -2,9 +2,9 @@ import asyncio
 
 from PIL import Image
 
-from api import FusionBrainApi
+from AsyncKandinsky import FusionBrainApi, ApiApi
 
-model = FusionBrainApi("Сюда свой api_key", "Сюда свой secret_key")
+model = FusionBrainApi(ApiApi("Сюда свой api_key", "Сюда свой secret_key"))
 
 
 async def generate():

@@ -44,7 +44,7 @@ class FusionBrainApi:
         else:
             raise TypeError("Invalid API type")
 
-    async def get_styles(self) -> ApiApi:
+    async def get_styles(self) -> dict:
         async with aiohttp.ClientSession() as session:
             n_url = self.url_get_styles.replace("$api_type", self.api_type)
             async with session.get(n_url) as response:
