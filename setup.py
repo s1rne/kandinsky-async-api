@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name='AsyncKandinsky',
-    version='1.0.1',
+    version='1.0.2',
     author='s1rne',
     author_email='s.simaranov8@gmail.com',
     description='This module is designed for asynchronous use of the kandinsky neural network and easy integration into your project.',
