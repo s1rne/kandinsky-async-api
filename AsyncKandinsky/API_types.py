@@ -3,15 +3,14 @@ import re
 import aiohttp
 
 from .URLS import WebUrls, ApiUrls
+from .DefaultParams import Text2ImageDefaultParams, Text2AnimationDefaultParams, Text2VideoDefaultParams
 
 
 class ApiApi:
     type = "api"
 
-    model_numbers = {
-        "3.0": "4"
-    }
     urls = ApiUrls
+    text2image_default_params = Text2ImageDefaultParams()
 
     def __init__(self, api_key: str, secret_key: str):
         self.api_key = api_key
@@ -24,10 +23,10 @@ class ApiApi:
 class ApiWeb:
     type = "web"
 
-    model_numbers = {
-        "3.0": "1"
-    }
     urls = WebUrls
+    text2image_default_params = Text2ImageDefaultParams()
+    text2animation_default_params = Text2AnimationDefaultParams()
+    text2video_default_params = Text2VideoDefaultParams()
 
     def __init__(self, email: str, password: str):
         self.email = email
@@ -54,6 +53,8 @@ class ApiWeb:
 
             async with session.get(WebUrls.url_session) as response:
                 user_data = await response.json()
+                if user_data == {}:
+                    raise ValueError("Username or Password is incorrect")
                 self.accessToken = user_data["accessToken"]
                 self.refreshToken = user_data["refreshToken"]
 

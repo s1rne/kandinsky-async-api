@@ -29,32 +29,27 @@ class FusionBrainApi:
             async with session.get(n_url) as response:
                 return await response.json()
 
-    async def text2image(self,
-                         prompt: str = "",
-                         negative_prompt: str = "",
-                         style: str = "DEFAULT",
-                         width: int = 1024,
-                         height: int = 1024,
-                         model: str = "3.0",  # don`t touch (only 3.0)
+    async def text2image(
+            self,
+            prompt: str,
+            negative_prompt: str | None = None,
+            style: str | None = None,
+            width: int | None = None,
+            height: int | None = None,
+            model: str | None = None,  # don`t touch (only 3.0)
 
-                         max_time: int = 120  # max time generation on seconds (after return error)
-                         ) -> dict:
-
-        params = {
-            "type": "GENERATE",
-            "style": style,
-            "width": width,
-            "height": height,
-            "generateParams": {"query": prompt},
-            "negativePromptDecoder": negative_prompt
-        }
+            max_time: int = 2 * 60  # max time generation on seconds (after return error)
+    ) -> dict:
+        params, model = await self.api.text2image_default_params.comb(
+            style, width, height, model, prompt, negative_prompt
+        )
 
         data = aiohttp.FormData()
         data.add_field("params",
                        json.dumps(params),
                        content_type="application/json",
                        )
-        data.add_field("model_id", self.api.model_numbers[model])
+        data.add_field("model_id", "1" if self.api.type == "web" else "4")
 
         async with aiohttp.ClientSession() as session:
             n_url = self.api.urls.url_text2image_run
@@ -65,20 +60,104 @@ class FusionBrainApi:
             return {"error": True, "data": result}
 
         uuid = result["uuid"]
-        return await self.polling(uuid, max_time)
+        return await self.polling(uuid, max_time, "img")
 
-    async def polling(self, uuid: str, max_time: int) -> dict:
+    async def text2animation(
+            self,
+            prompts: list[str],
+            negative_prompts: list[str] | None = None,
+            directions: list[str] | None = None,
+            width: int | None = None,
+            height: int | None = None,
+
+            max_time: int = 5 * 60  # max time generation on seconds (after return error)
+    ) -> dict:
+        if self.api.type != "web":
+            raise TypeError("text2animation only supports web")
+
+        params = await self.api.text2animation_default_params.comb(
+            prompts, negative_prompts, directions, width, height
+        )
+        params = params[0]
+
+        data = aiohttp.FormData()
+        data.add_field("params",
+                       json.dumps(params),
+                       content_type="application/json",
+                       )
+        data.add_field("model_id", "2")
+
+        async with aiohttp.ClientSession() as session:
+            n_url = self.api.urls.url_text2animation_run
+            async with session.post(n_url, data=data, headers=await self.api.get_headers()) as resp:
+                result = await resp.json()
+
+        if "error" in result:
+            return {"error": True, "data": result}
+
+        uuid = result["uuid"]
+        return await self.polling(uuid, max_time, "anim")
+
+    async def text2video(
+            self,
+            prompt: str,
+            width: int | None = None,
+            height: int | None = None,
+
+            max_time: int = 6 * 60  # max time generation on seconds (after return error)
+    ) -> dict:
+        if self.api.type != "web":
+            raise TypeError("text2video only supports web")
+
+        params = await self.api.text2video_default_params.comb(
+            prompt, width, height
+        )
+        params = params[0]
+
+        data = aiohttp.FormData()
+        data.add_field("params",
+                       json.dumps(params),
+                       content_type="application/json",
+                       )
+        data.add_field("model_id", "3")
+
+        async with aiohttp.ClientSession() as session:
+            n_url = self.api.urls.url_text2animation_run
+            async with session.post(n_url, data=data, headers=await self.api.get_headers()) as resp:
+                result = await resp.json()
+
+        if "error" in result:
+            return {"error": True, "data": result}
+
+        uuid = result["uuid"]
+        return await self.polling(uuid, max_time, "video")
+
+    async def polling(self, uuid: str, max_time: int, type_generation: str) -> dict:
         start_time = time.time()
         while time.time() - (start_time + max_time) < 0:
             async with aiohttp.ClientSession() as session:
-                n_url = self.api.urls.url_text2_image_status.replace("$uuid", uuid)
+                if type_generation == "img":
+                    n_url = self.api.urls.url_text2image_status
+                elif type_generation == "anim":
+                    n_url = self.api.urls.url_text2animation_status
+                elif type_generation == "video":
+                    n_url = self.api.urls.url_text2video_status
+                else:
+                    raise TypeError("type_generation must be 'img' or 'anim' or 'video'")
+                n_url = n_url.replace("$uuid", uuid)
                 async with session.get(n_url, headers=await self.api.get_headers()) as resp:
                     result = await resp.json()
                     if result["status"] == "DONE":
-                        if result["censored"]:
+                        censored = result["censored"]
+                        if isinstance(censored, bool) and censored or isinstance(censored, list) and any(censored):
                             return {"error": True, "data": "censored: is True"}
                         else:
-                            return {"error": False, "data": BytesIO(base64.b64decode(result["images"][0]))}
+                            if type_generation == "img":
+                                return {"error": False, "data": BytesIO(base64.b64decode(result["images"][0]))}
+                            elif type_generation in ["anim", "video"]:
+                                return {"error": False, "data": BytesIO(base64.b64decode(result["video"]))}
+                            else:
+                                raise TypeError("type_generation must be 'img' or 'anim' or 'video'")
                     elif result["status"] == "FAIL":
                         return {"error": True, "data": f"status is FAIL: {result['status']}"}
 

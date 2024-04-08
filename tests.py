@@ -1,7 +1,5 @@
 import asyncio
 
-from PIL import Image
-
 from AsyncKandinsky import FusionBrainApi, ApiApi, ApiWeb
 
 model = FusionBrainApi(ApiApi("Сюда свой api_key", "Сюда свой secret_key"))
@@ -15,8 +13,32 @@ async def generate():
         print("Error:")
         print(result["data"])
     else:
-        img = Image.open(result["data"])
-        img.save('cat_anime.jpg')
+        with open("cat_anime_img.png", "wb") as f:
+            f.write(result["data"].getvalue())
+        print("Done!")
+
+    # _______________________________________________________________________________________
+
+    result = await model.text2video("котик бежит по полю")
+    # Стиль придётся самому вписывать
+    if result["error"]:
+        print("Error:")
+        print(result["data"])
+    else:
+        with open("cat_anime_video.mp4", "wb") as f:
+            f.write(result["data"].getvalue())
+        print("Done!")
+
+    # _______________________________________________________________________________________
+
+    result = await model.text2animation(["котик бежит по полю", "котик пьёт воду из речки"])
+    # Стиль придётся самому вписывать
+    if result["error"]:
+        print("Error:")
+        print(result["data"])
+    else:
+        with open("cat_anime_animation.mp4", "wb") as f:
+            f.write(result["data"].getvalue())
         print("Done!")
 
 

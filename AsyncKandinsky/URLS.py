@@ -18,4 +18,10 @@ class WebUrls:
     url_check_token = f"{url_web}text2image/availability?model_id=1"
 
     url_text2image_run = f"{url_web}text2image/run"
-    url_text2_image_status = f"{url_web}text2image/status/$uuid"
+    url_text2image_status = f"{url_web}text2image/status/$uuid"
+
+    url_text2animation_run = f"{url_web}animation/run?model_id=2"
+    url_text2animation_status = f"{url_web}animation/status/$uuid"
+
+    url_text2video_run = f"{url_web}video/run?model_id=2"
+    url_text2video_status = f"{url_web}video/status/$uuid"

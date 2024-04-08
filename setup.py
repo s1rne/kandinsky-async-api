@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name='AsyncKandinsky',
-    version='1.0.3',
+    version='2.0.0',
     author='s1rne',
     author_email='s.simaranov8@gmail.com',
     description='This module is designed for asynchronous use of the kandinsky neural network and easy integration into your project.',
@@ -16,7 +16,7 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/s1rne/kandinsky-async-api',
     packages=find_packages(),
-    install_requires=['aiohttp>=3.8.4', 'Pillow>=10.0.0'],
+    install_requires=['aiohttp>=3.8.4'],
     classifiers=[
         'Programming Language :: Python :: 3.9',
         'License :: OSI Approved :: MIT License',
