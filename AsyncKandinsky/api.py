@@ -122,7 +122,7 @@ class FusionBrainApi:
         data.add_field("model_id", "3")
 
         async with aiohttp.ClientSession() as session:
-            n_url = self.api.urls.url_text2animation_run
+            n_url = self.api.urls.url_text2video_run
             async with session.post(n_url, data=data, headers=await self.api.get_headers()) as resp:
                 result = await resp.json()
 

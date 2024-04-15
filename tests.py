@@ -18,7 +18,6 @@ async def generate():
         print("Done!")
 
     # _______________________________________________________________________________________
-
     result = await model.text2video("котик бежит по полю")
     # Стиль придётся самому вписывать
     if result["error"]:
@@ -30,7 +29,6 @@ async def generate():
         print("Done!")
 
     # _______________________________________________________________________________________
-
     result = await model.text2animation(["котик бежит по полю", "котик пьёт воду из речки"])
     # Стиль придётся самому вписывать
     if result["error"]:
@@ -38,6 +36,17 @@ async def generate():
         print(result["data"])
     else:
         with open("cat_anime_animation.mp4", "wb") as f:
+            f.write(result["data"].getvalue())
+        print("Done!")
+
+    # _______________________________________________________________________________________
+    result = await model.text2video("котик бежит по дороге")
+    # Стиль придётся самому вписывать
+    if result["error"]:
+        print("Error:")
+        print(result["data"])
+    else:
+        with open("cat_anime_video.mp4", "wb") as f:
             f.write(result["data"].getvalue())
         print("Done!")
 

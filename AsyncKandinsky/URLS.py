@@ -23,5 +23,5 @@ class WebUrls:
     url_text2animation_run = f"{url_web}animation/run?model_id=2"
     url_text2animation_status = f"{url_web}animation/status/$uuid"
 
-    url_text2video_run = f"{url_web}video/run?model_id=2"
-    url_text2video_status = f"{url_web}video/status/$uuid"
+    url_text2video_run = f"{url_web}text2video/run?model_id=3"
+    url_text2video_status = f"{url_web}text2video/status/$uuid"
