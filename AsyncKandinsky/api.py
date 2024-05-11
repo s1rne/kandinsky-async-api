@@ -36,12 +36,13 @@ class FusionBrainApi:
             style: str | None = None,
             width: int | None = None,
             height: int | None = None,
-            model: str | None = None,  # don`t touch (only 3.0)
+            art_gpt: bool | None = None,
+            model: str | None = None,  # don`t touch (only 3.1)
 
             max_time: int = 2 * 60  # max time generation on seconds (after return error)
     ) -> dict:
         params, model = await self.api.text2image_default_params.comb(
-            style, width, height, model, prompt, negative_prompt
+            style, width, height, art_gpt, model, prompt, negative_prompt
         )
 
         data = aiohttp.FormData()

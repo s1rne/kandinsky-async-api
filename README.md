@@ -1,6 +1,6 @@
 # **kandinsky-api-requests**
 
-**Асинхронное** api для использования kandinsky 3.0 в своих проектах
+**Асинхронное** api для использования kandinsky 3.1 в своих проектах
 
 ## **Как использовать:**
 ##### Установка: 
@@ -32,6 +32,7 @@ model = FusionBrainApi(ApiWeb("Ваша почта", "Ваш пароль"))
 ```
 async def generate():
     result = await model.text2image("котик", style="ANIME")
+    # новый параметр art_gpt - это инструмент для автоматического улучшения промпта => улучшение качества картинки 
     if result["error"]:
         print("Error:")
         print(result["data"])

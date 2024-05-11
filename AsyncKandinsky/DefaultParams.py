@@ -2,6 +2,7 @@ class Text2ImageDefaultParams:
     style = "DEFAULT"
     width = 1024
     height = 1024
+    art_gpt = False
     model = "3.0"
     prompt = "Cat"
     negative_prompt = ""
@@ -11,6 +12,7 @@ class Text2ImageDefaultParams:
             style: str,
             width: int,
             height: int,
+            art_gpt: bool,
             model: str,
             prompt: str,
             negative_prompt: str,
@@ -18,6 +20,7 @@ class Text2ImageDefaultParams:
         _style = self.style if style is None else style
         _width = self.width if width is None else width
         _height = self.height if height is None else height
+        _art_gpt = self.art_gpt if art_gpt in None else art_gpt
         _model = self.model
         _prompt = self.prompt if prompt is None else prompt
         _negative_prompt = self.negative_prompt if negative_prompt is None else negative_prompt
@@ -28,6 +31,7 @@ class Text2ImageDefaultParams:
                 "style": _style,
                 "width": _width,
                 "height": _height,
+                "censor": {"useGigaBeautificator": art_gpt},
                 "generateParams": {"query": _prompt},
                 "negativePromptDecoder": _negative_prompt
             },
