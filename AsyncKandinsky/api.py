@@ -52,9 +52,9 @@ class FusionBrainApi:
                        )
         data.add_field("model_id", "1" if self.api.type == "web" else "4")
 
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(headers=await self.api.get_headers()) as session:
             n_url = self.api.urls.url_text2image_run
-            async with session.post(n_url, data=data, headers=await self.api.get_headers()) as resp:
+            async with session.post(n_url, data=data) as resp:
                 result = await resp.json()
 
         if "error" in result:
@@ -88,9 +88,9 @@ class FusionBrainApi:
                        )
         data.add_field("model_id", "2")
 
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(headers=await self.api.get_headers()) as session:
             n_url = self.api.urls.url_text2animation_run
-            async with session.post(n_url, data=data, headers=await self.api.get_headers()) as resp:
+            async with session.post(n_url, data=data) as resp:
                 result = await resp.json()
 
         if "error" in result:
@@ -122,9 +122,9 @@ class FusionBrainApi:
                        )
         data.add_field("model_id", "3")
 
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(headers=await self.api.get_headers()) as session:
             n_url = self.api.urls.url_text2video_run
-            async with session.post(n_url, data=data, headers=await self.api.get_headers()) as resp:
+            async with session.post(n_url, data=data) as resp:
                 result = await resp.json()
 
         if "error" in result:
@@ -136,7 +136,7 @@ class FusionBrainApi:
     async def polling(self, uuid: str, max_time: int, type_generation: str) -> dict:
         start_time = time.time()
         while time.time() - (start_time + max_time) < 0:
-            async with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession(headers=await self.api.get_headers()) as session:
                 if type_generation == "img":
                     n_url = self.api.urls.url_text2image_status
                 elif type_generation == "anim":
@@ -146,7 +146,7 @@ class FusionBrainApi:
                 else:
                     raise TypeError("type_generation must be 'img' or 'anim' or 'video'")
                 n_url = n_url.replace("$uuid", uuid)
-                async with session.get(n_url, headers=await self.api.get_headers()) as resp:
+                async with session.get(n_url) as resp:
                     result = await resp.json()
                     if result["status"] == "DONE":
                         censored = result["censored"]
@@ -154,7 +154,11 @@ class FusionBrainApi:
                             return {"error": True, "data": "censored: is True"}
                         else:
                             if type_generation == "img":
-                                return {"error": False, "data": BytesIO(base64.b64decode(result["images"][0]))}
+                                async with session.get(result["images"][0]) as resp_img:
+                                    if resp_img.status == 200:
+                                        return {"error": False, "data": BytesIO(await resp_img.read())}
+                                    else:
+                                        return {"error": True, "data": "Fail install image from url"}
                             elif type_generation in ["anim", "video"]:
                                 return {"error": False, "data": BytesIO(base64.b64decode(result["video"]))}
                             else:

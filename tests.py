@@ -8,7 +8,7 @@ model = FusionBrainApi(ApiWeb("Ваша почта", "Ваш пароль"))
 
 
 async def generate():
-    result = await model.text2image("котик", style="ANIME")
+    result = await model.text2image("котик", style="ANIME", art_gpt=True)
     if result["error"]:
         print("Error:")
         print(result["data"])

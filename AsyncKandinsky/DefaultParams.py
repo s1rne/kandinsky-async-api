@@ -20,7 +20,7 @@ class Text2ImageDefaultParams:
         _style = self.style if style is None else style
         _width = self.width if width is None else width
         _height = self.height if height is None else height
-        _art_gpt = self.art_gpt if art_gpt in None else art_gpt
+        _art_gpt = self.art_gpt if art_gpt is None else art_gpt
         _model = self.model
         _prompt = self.prompt if prompt is None else prompt
         _negative_prompt = self.negative_prompt if negative_prompt is None else negative_prompt
