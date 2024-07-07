@@ -40,7 +40,7 @@ class FusionBrainApi:
             model: str | None = None,  # don`t touch (only 3.1)
 
             max_time: int = 2 * 60  # max time generation on seconds (after return error)
-    ) -> dict:
+    ) -> BytesIO:
         params, model = await self.api.text2image_default_params.comb(
             style, width, height, art_gpt, model, prompt, negative_prompt
         )
@@ -58,7 +58,7 @@ class FusionBrainApi:
                 result = await resp.json()
 
         if "error" in result:
-            return {"error": True, "data": result}
+            raise ValueError(result)
 
         uuid = result["uuid"]
         return await self.polling(uuid, max_time, "img")
@@ -72,7 +72,7 @@ class FusionBrainApi:
             height: int | None = None,
 
             max_time: int = 5 * 60  # max time generation on seconds (after return error)
-    ) -> dict:
+    ) -> BytesIO:
         if self.api.type != "web":
             raise TypeError("text2animation only supports web")
 
@@ -94,7 +94,7 @@ class FusionBrainApi:
                 result = await resp.json()
 
         if "error" in result:
-            return {"error": True, "data": result}
+            raise ValueError(result)
 
         uuid = result["uuid"]
         return await self.polling(uuid, max_time, "anim")
@@ -106,7 +106,7 @@ class FusionBrainApi:
             height: int | None = None,
 
             max_time: int = 6 * 60  # max time generation on seconds (after return error)
-    ) -> dict:
+    ) -> BytesIO:
         if self.api.type != "web":
             raise TypeError("text2video only supports web")
 
@@ -128,12 +128,12 @@ class FusionBrainApi:
                 result = await resp.json()
 
         if "error" in result:
-            return {"error": True, "data": result}
+            raise ValueError(result)
 
         uuid = result["uuid"]
         return await self.polling(uuid, max_time, "video")
 
-    async def polling(self, uuid: str, max_time: int, type_generation: str) -> dict:
+    async def polling(self, uuid: str, max_time: int, type_generation: str) -> BytesIO:
         start_time = time.time()
         while time.time() - (start_time + max_time) < 0:
             async with aiohttp.ClientSession(headers=await self.api.get_headers()) as session:
@@ -151,21 +151,23 @@ class FusionBrainApi:
                     if result["status"] == "DONE":
                         censored = result["censored"]
                         if isinstance(censored, bool) and censored or isinstance(censored, list) and any(censored):
-                            return {"error": True, "data": "censored: is True"}
+                            raise ValueError("censored: is True")
                         else:
                             if type_generation == "img":
                                 async with session.get(result["images"][0]) as resp_img:
                                     if resp_img.status == 200:
-                                        return {"error": False, "data": BytesIO(await resp_img.read())}
+                                        # return {"error": False, "data": BytesIO(await resp_img.read())}
+                                        return BytesIO(await resp_img.read())
                                     else:
-                                        return {"error": True, "data": "Fail install image from url"}
+                                        # return {"error": True, "data": "Fail install image from url"}
+                                        raise ValueError("Fail install image from url")
                             elif type_generation in ["anim", "video"]:
-                                return {"error": False, "data": BytesIO(base64.b64decode(result["video"]))}
+                                return BytesIO(base64.b64decode(result["video"]))
                             else:
                                 raise TypeError("type_generation must be 'img' or 'anim' or 'video'")
                     elif result["status"] == "FAIL":
-                        return {"error": True, "data": f"status is FAIL: {result['status']}"}
+                        raise ValueError(f"status is FAIL: {result['status']}")
 
             await asyncio.sleep(4)
 
-        return {"error": True, "data": f"timeout: {max_time} seconds"}
+        raise ValueError(f"timeout: {max_time} seconds")
