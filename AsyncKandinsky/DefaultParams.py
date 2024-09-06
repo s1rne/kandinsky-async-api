@@ -3,9 +3,9 @@ class Text2ImageDefaultParams:
     width = 1024
     height = 1024
     art_gpt = False
-    model = "3.0"
     prompt = "Cat"
     negative_prompt = ""
+    num_images = 1
 
     async def comb(
             self,
@@ -13,17 +13,17 @@ class Text2ImageDefaultParams:
             width: int,
             height: int,
             art_gpt: bool,
-            model: str,
             prompt: str,
             negative_prompt: str,
+            num_images: str
     ) -> list:
-        _style = self.style if style is None else style
-        _width = self.width if width is None else width
-        _height = self.height if height is None else height
-        _art_gpt = self.art_gpt if art_gpt is None else art_gpt
-        _model = self.model
-        _prompt = self.prompt if prompt is None else prompt
-        _negative_prompt = self.negative_prompt if negative_prompt is None else negative_prompt
+        _style = style or self.style
+        _width = width or self.width
+        _height = height or self.height
+        _art_gpt = art_gpt or self.art_gpt
+        _prompt = prompt or self.prompt
+        _negative_prompt = negative_prompt or self.negative_prompt
+        _num_images = num_images or self.num_images
 
         return [
             {
@@ -31,11 +31,11 @@ class Text2ImageDefaultParams:
                 "style": _style,
                 "width": _width,
                 "height": _height,
+                "numImages": _num_images,
                 "censor": {"useGigaBeautificator": art_gpt},
                 "generateParams": {"query": _prompt},
                 "negativePromptDecoder": _negative_prompt
-            },
-            _model
+            }
         ]
 
 

@@ -1,27 +1,32 @@
+class BaseUrls:
+    url_get_styles_base = "https://cdn.fusionbrain.ai/static/styles"
+    url_api_base = "https://api-key.fusionbrain.ai/key/api/v1"
+    url_web_base = "https://api.fusionbrain.ai/web/api/v1"
+    url_login_base = "https://fusionbrain.ai/api/auth"
+
 class ApiUrls:
-    url_base = "https://api-key.fusionbrain.ai/key/api/v1/"
+    url_get_styles = f"{BaseUrls.url_get_styles_base}/key"
 
-    url_text2image_run = f"{url_base}text2image/run"
-    url_text2_image_status = f"{url_base}text2image/status/$uuid"
+    url_pipelines = f"{BaseUrls.url_api_base}/pipelines"
 
+    url_text2image_run = f"{BaseUrls.url_api_base}/pipeline/run"
+    url_text2image_status = f"{BaseUrls.url_api_base}/pipeline/status/$uuid"
 
 class WebUrls:
-    url_base = "https://api.fusionbrain.ai/"
-    url_base_login = "https://fusionbrain.ai/api/auth/"
+    url_csrf = f"{BaseUrls.url_login_base}/csrf/"
+    url_keycloak = f"{BaseUrls.url_login_base}/signin/keycloak/"
+    url_session = f"{BaseUrls.url_login_base}/session/"
+    url_check_token = f"{BaseUrls.url_web_base}/text2image/availability"
 
-    url_web = f"{url_base}web/api/v1/"
+    url_get_styles = f"{BaseUrls.url_get_styles_base}/web"
 
-    url_csrf = f"{url_base_login}csrf/"
-    url_keycloak = f"{url_base_login}signin/keycloak/"
-    url_session = f"{url_base_login}session/"
+    url_pipelines = f"{BaseUrls.url_web_base}/pipelines"
 
-    url_check_token = f"{url_web}text2image/availability?model_id=1"
+    url_text2image_run = f"{BaseUrls.url_web_base}/text2image/run"
+    url_text2image_status = f"{BaseUrls.url_web_base}/text2image/status/$uuid"
 
-    url_text2image_run = f"{url_web}text2image/run"
-    url_text2image_status = f"{url_web}text2image/status/$uuid"
+    url_text2animation_run = f"{BaseUrls.url_web_base}/animation/run"
+    url_text2animation_status = f"{BaseUrls.url_web_base}/animation/status/$uuid"
 
-    url_text2animation_run = f"{url_web}animation/run?model_id=2"
-    url_text2animation_status = f"{url_web}animation/status/$uuid"
-
-    url_text2video_run = f"{url_web}text2video/run?model_id=3"
-    url_text2video_status = f"{url_web}text2video/status/$uuid"
+    url_text2video_run = f"{BaseUrls.url_web_base}/text2video/run"
+    url_text2video_status = f"{BaseUrls.url_web_base}/text2video/status/$uuid"

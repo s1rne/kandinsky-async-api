@@ -47,12 +47,12 @@ async def generate():
 async def generate():
     # описания для двух сцен
     try:
-        result = await model.text2video("котик бежит по полю")
+        result = await model.text2animation(["котик бежит по полю", "котик пьёт воду из речки"])
         # заготовленных стилей нет
     except ValueError as e:
         print(f"Error:\t{e}")
     else:
-        with open("cat_anime_video.mp4", "wb") as f:
+        with open("cat_anime_animation.mp4", "wb") as f:
             f.write(result.getvalue())
         print("Done!")
 ```
@@ -61,12 +61,12 @@ async def generate():
 ```
 async def generate():
     try:
-        result = await model.text2animation(["котик бежит по полю", "котик пьёт воду из речки"])
+        result = await model.text2video("котик бежит по полю")
         # заготовленных стилей нет
     except ValueError as e:
         print(f"Error:\t{e}")
     else:
-        with open("cat_anime_animation.mp4", "wb") as f:
+        with open("cat_anime_video.mp4", "wb") as f:
             f.write(result.getvalue())
         print("Done!")
 ```
