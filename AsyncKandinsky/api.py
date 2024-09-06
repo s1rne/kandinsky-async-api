@@ -54,7 +54,7 @@ class FusionBrainApi:
 
         async with aiohttp.ClientSession(headers=await self.api.get_headers()) as session:
             n_url = self.api.urls.url_text2image_run
-            async with session.post(n_url, data=data) as resp:
+            async with session.post(n_url + "?pipeline_id=3870e688-5750-40ac-b7e6-109f20642d27", data=data) as resp:
                 result = await resp.json()
 
         if "error" in result:
@@ -90,7 +90,7 @@ class FusionBrainApi:
 
         async with aiohttp.ClientSession(headers=await self.api.get_headers()) as session:
             n_url = self.api.urls.url_text2animation_run
-            async with session.post(n_url, data=data) as resp:
+            async with session.post(n_url + "?pipeline_id=8e2dfd16-4425-4aa7-9155-c0c18e5c33f1", data=data) as resp:
                 result = await resp.json()
 
         if "error" in result:
@@ -124,7 +124,7 @@ class FusionBrainApi:
 
         async with aiohttp.ClientSession(headers=await self.api.get_headers()) as session:
             n_url = self.api.urls.url_text2video_run
-            async with session.post(n_url, data=data) as resp:
+            async with session.post(n_url + "?pipeline_id=43ac348d-7a72-41be-9c45-8a90799d72e8", data=data) as resp:
                 result = await resp.json()
 
         if "error" in result:
