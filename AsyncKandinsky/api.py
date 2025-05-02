@@ -56,7 +56,7 @@ class FusionBrainApi:
             async with session.get(f"{pipelines_url}?type=TEXT2IMAGE") as resp:
                 pipelines = await resp.json()
 
-            n_url = self.api.urls.url_texts2image_run
+            n_url = self.api.urls.url_text2image_run
             if self.api.type == ApiApi.type:
                 data.add_field(
                     "pipeline_id",
